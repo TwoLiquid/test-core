@@ -1,0 +1,9 @@
+Dockerfile*
+*.md
+*.postman_collection.json
+.env.example
+.dockerignore
+.git
+.gitignore
+.gitlab-ci.yml
+#resources/faker

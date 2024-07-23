@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Transformers\Api\General\Dashboard\Wallet;
+
+use App\Lists\User\Balance\Type\UserBalanceTypeListItem;
+use App\Transformers\BaseTransformer;
+
+/**
+ * Class UserBalanceTypeTransformer
+ *
+ * @package App\Transformers\Api\General\Dashboard\Wallet
+ */
+class UserBalanceTypeTransformer extends BaseTransformer
+{
+    /**
+     * @param UserBalanceTypeListItem $userBalanceTypeListItem
+     *
+     * @return array
+     */
+    public function transform(UserBalanceTypeListItem $userBalanceTypeListItem) : array
+    {
+        return [
+            'id'        => $userBalanceTypeListItem->id,
+            'name'      => $userBalanceTypeListItem->name,
+            'code'      => $userBalanceTypeListItem->code,
+            'id_prefix' => $userBalanceTypeListItem->idPrefix
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getItemKey() : string
+    {
+        return 'user_balance_type';
+    }
+
+    /**
+     * @return string
+     */
+    public function getCollectionKey() : string
+    {
+        return 'user_balance_types';
+    }
+}

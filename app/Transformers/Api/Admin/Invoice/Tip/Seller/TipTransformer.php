@@ -1,0 +1,143 @@
+<?php
+
+namespace App\Transformers\Api\Admin\Invoice\Tip\Seller;
+
+use App\Models\MySql\Tip\Tip;
+use App\Transformers\BaseTransformer;
+use League\Fractal\Resource\Collection;
+use League\Fractal\Resource\Item;
+
+/**
+ * Class TipTransformer
+ *
+ * @package App\Transformers\Api\Admin\Invoice\Tip\Seller
+ */
+class TipTransformer extends BaseTransformer
+{
+    /**
+     * @var array
+     */
+    protected array $defaultIncludes = [
+        'item',
+        'method',
+        'seller',
+        'vybe',
+        'transactions'
+    ];
+
+    /**
+     * @param Tip $tip
+     *
+     * @return array
+     */
+    public function transform(Tip $tip) : array
+    {
+        return [
+            'amount'        => $tip->amount,
+            'handling_fee'  => $tip->handling_fee,
+            'amount_earned' => $tip->amount_earned,
+            'comment'       => $tip->comment,
+            'paid_at'       => $tip->paid_at
+        ];
+    }
+
+    /**
+     * @param Tip $tip
+     *
+     * @return Item|null
+     */
+    public function includeItem(Tip $tip) : ?Item
+    {
+        $orderItem = null;
+
+        if ($tip->relationLoaded('item')) {
+            $orderItem = $tip->item;
+        }
+
+        return $orderItem ? $this->item($orderItem, new OrderItemTransformer) : null;
+    }
+
+    /**
+     * @param Tip $tip
+     *
+     * @return Item|null
+     */
+    public function includeMethod(Tip $tip) : ?Item
+    {
+        $paymentMethod = null;
+
+        if ($tip->relationLoaded('method')) {
+            $paymentMethod = $tip->method;
+        }
+
+        return $paymentMethod ? $this->item($paymentMethod, new PaymentMethodTransformer) : null;
+    }
+
+    /**
+     * @param Tip $tip
+     *
+     * @return Item|null
+     */
+    public function includeSeller(Tip $tip) : ?Item
+    {
+        $seller = null;
+
+        if ($tip->relationLoaded('seller')) {
+            $seller = $tip->seller;
+        }
+
+        return $seller ? $this->item($seller, new UserTransformer) : null;
+    }
+
+    /**
+     * @param Tip $tip
+     *
+     * @return Item|null
+     */
+    public function includeVybe(Tip $tip) : ?Item
+    {
+        $vybe = null;
+
+        if ($tip->relationLoaded('item')) {
+            $orderItem = $tip->item;
+
+            if ($orderItem->relationLoaded('vybe')) {
+                $vybe = $orderItem->vybe;
+            }
+        }
+
+        return $vybe ? $this->item($vybe, new VybeTransformer) : null;
+    }
+
+    /**
+     * @param Tip $tip
+     *
+     * @return Collection|null
+     */
+    public function includeTransactions(Tip $tip) : ?Collection
+    {
+        $tipTransactions = null;
+
+        if ($tip->relationLoaded('transactions')) {
+            $tipTransactions = $tip->transactions;
+        }
+
+        return $tipTransactions ? $this->collection($tipTransactions, new TipTransactionTransformer) : null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getItemKey() : string
+    {
+        return 'tip';
+    }
+
+    /**
+     * @return string
+     */
+    public function getCollectionKey() : string
+    {
+        return 'tips';
+    }
+}

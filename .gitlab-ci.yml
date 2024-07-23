@@ -1,0 +1,4 @@
+include:
+  - project: 'mellointeractive/common'
+    ref: main
+    file: '/pipelines/backend.gitlab-ci.yml'
